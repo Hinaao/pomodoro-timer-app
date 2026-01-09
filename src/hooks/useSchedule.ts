@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
-import { useScheduleStore } from '@/store/scheduleStore';
-import { getSessions } from '@/lib/localStorage';
-import { format } from 'date-fns';
+import { useEffect } from "react";
+import { useScheduleStore } from "@/store/scheduleStore";
+import { getSessions } from "@/lib/localStorage";
+import { format } from "date-fns";
 
 export function useSchedule() {
   const { schedules, loadSchedules, updateCompletedPomodoros } =
@@ -21,10 +21,7 @@ export function useSchedule() {
         // このタスクの完了セッションをカウント
         const completedCount = sessions.filter((session) => {
           // セッションの日付がスケジュール日付と一致するか
-          const sessionDate = format(
-            new Date(session.startedAt),
-            'yyyy-MM-dd'
-          );
+          const sessionDate = format(new Date(session.startedAt), "yyyy-MM-dd");
           if (sessionDate !== schedule.date) return false;
 
           // タスクIDが一致するか
@@ -37,7 +34,7 @@ export function useSchedule() {
           if (!session.completedAt) return false;
 
           // workモードのみカウント（breakは除外）
-          if (session.mode !== 'work') return false;
+          if (session.mode !== "work") return false;
 
           return true;
         }).length;

@@ -1,35 +1,35 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useScheduleStore } from '@/store/scheduleStore';
-import { useTaskStore } from '@/store/taskStore';
+import { useState } from "react";
+import { useScheduleStore } from "@/store/scheduleStore";
+import { useTaskStore } from "@/store/taskStore";
 
 export function AddTaskToScheduleForm() {
   const { selectedDate, addTaskToSchedule, error, clearError } =
     useScheduleStore();
   const { tasks } = useTaskStore();
 
-  const [selectedTaskId, setSelectedTaskId] = useState('');
+  const [selectedTaskId, setSelectedTaskId] = useState("");
   const [estimatedPomodoros, setEstimatedPomodoros] = useState(2);
-  const [notes, setNotes] = useState('');
+  const [notes, setNotes] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!selectedDate) {
-      alert('日付を選択してください');
+      alert("日付を選択してください");
       return;
     }
 
     if (!selectedTaskId) {
-      alert('タスクを選択してください');
+      alert("タスクを選択してください");
       return;
     }
 
     // 選択されたタスクの情報を取得
     const task = tasks.find((t) => t.id === selectedTaskId);
     if (!task) {
-      alert('タスクが見つかりません');
+      alert("タスクが見つかりません");
       return;
     }
 
@@ -43,9 +43,9 @@ export function AddTaskToScheduleForm() {
 
     // エラーがなければフォームをリセット
     if (!error) {
-      setSelectedTaskId('');
+      setSelectedTaskId("");
       setEstimatedPomodoros(2);
-      setNotes('');
+      setNotes("");
     }
   };
 
@@ -78,8 +78,7 @@ export function AddTaskToScheduleForm() {
             <option value="">タスクを選択...</option>
             {tasks.map((task) => (
               <option key={task.id} value={task.id}>
-                [{task.source === 'local' ? 'ローカル' : 'Linear'}]{' '}
-                {task.title}
+                [{task.source === "local" ? "ローカル" : "Linear"}] {task.title}
               </option>
             ))}
           </select>
@@ -124,7 +123,7 @@ export function AddTaskToScheduleForm() {
           disabled={!selectedDate}
           className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed font-semibold"
         >
-          {selectedDate ? 'スケジュールに追加' : '日付を選択してください'}
+          {selectedDate ? "スケジュールに追加" : "日付を選択してください"}
         </button>
       </form>
     </div>

@@ -144,13 +144,40 @@ LINEAR_API_TOKEN=lin_api_...
 
 **注意:** Linear API Tokenはセンシティブデータ。フロントエンドに露出させない。サーバーサイドでのみ使用。
 
+## Coding Standards
+
+### Code Formatting
+
+**重要:** このプロジェクトはESLint/Prettierによる自動フォーマットが有効です。以下のルールに従ってコードを書いてください：
+
+- **文字列リテラル:** ダブルクォート (`"`) を使用（シングルクォート `'` は使用しない）
+- **改行:** 長い行は適切に改行する（特にJSX属性）
+- **インポート順序:** React → サードパーティ → ローカルモジュール の順
+- **命名規則:**
+  - コンポーネント: PascalCase (例: `CalendarView`)
+  - 関数・変数: camelCase (例: `handleSubmit`)
+  - 定数: UPPER_SNAKE_CASE (例: `STORAGE_KEYS`)
+  - ファイル名: コンポーネントはPascalCase、その他はcamelCase
+
+**コード作成時の注意点:**
+- 新規ファイル作成時は最初からダブルクォートを使用する
+- JSXの属性は改行が必要な場合は適切に改行する
+- linterのフォーマット修正によるコミット履歴の汚染を防ぐ
+
+### TypeScript Standards
+
+- `any` 型の使用は最小限にする
+- 型定義は `src/types/` に集約
+- Propsやステート型は明示的に定義
+- 関数の戻り値型は可能な限り明示
+
 ## Development Notes
 
 ### Phase-based Development
 
 プロジェクトは6段階のPhaseに分割：
-1. 基本機能（タイマー + localStorage）
-2. カレンダー統合
+1. 基本機能（タイマー + localStorage） ✅ 完了
+2. カレンダー統合 ✅ 完了
 3. AI提案機能
 4. セッション履歴・統計
 5. PWA化
@@ -162,6 +189,7 @@ LINEAR_API_TOKEN=lin_api_...
 - **AI API費用:** Claude APIは費用がかかるため、キャッシュとレート制限を実装
 - **Linear MCP:** 接続状況をハンドリング（インターネット要件）
 - **TypeScript:** 型安全性を最大化 - `any` の使用は最小化
+- **コードフォーマット:** ダブルクォート使用、linterルールに従う
 
 ### Common Tasks
 
