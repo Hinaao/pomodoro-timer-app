@@ -1,9 +1,10 @@
-import { Settings, Session } from '@/types';
+import { Settings, Session, LocalTask } from '@/types';
 
 // localStorageのキー
 const STORAGE_KEYS = {
   SETTINGS: 'pomodoro-app-settings',
   SESSIONS: 'pomodoro-app-sessions',
+  LOCAL_TASKS: 'pomodoro-app-local-tasks',
 } as const;
 
 // デフォルト設定
@@ -126,4 +127,64 @@ export function clearAllSessions(): void {
   } catch (error) {
     console.error('Failed to clear sessions:', error);
   }
+}
+
+/**
+ * ローカルタスクを取得
+ */
+export function getLocalTasks(): LocalTask[] {
+  if (typeof window === 'undefined') return [];
+
+  try {
+    const stored = localStorage.getItem(STORAGE_KEYS.LOCAL_TASKS);
+    if (!stored) return [];
+
+    return JSON.parse(stored);
+  } catch (error) {
+    console.error('Failed to load local tasks:', error);
+    return [];
+  }
+}
+
+/**
+ * ローカルタスクを保存
+ */
+export function saveLocalTasks(tasks: LocalTask[]): void {
+  if (typeof window === 'undefined') return;
+
+  try {
+    localStorage.setItem(STORAGE_KEYS.LOCAL_TASKS, JSON.stringify(tasks));
+  } catch (error) {
+    console.error('Failed to save local tasks:', error);
+    if (error instanceof DOMException && error.code === 22) {
+      alert('ストレージ容量が不足しています。');
+    }
+  }
+}
+
+/**
+ * ローカルタスクを追加
+ */
+export function addLocalTask(task: LocalTask): void {
+  const tasks = getLocalTasks();
+  tasks.push(task);
+  saveLocalTasks(tasks);
+}
+
+/**
+ * ローカルタスクを削除
+ */
+export function deleteLocalTask(taskId: string): void {
+  const tasks = getLocalTasks();
+  const filtered = tasks.filter((task) => task.id !== taskId);
+  saveLocalTasks(filtered);
+}
+
+/**
+ * ローカルタスクを更新
+ */
+export function updateLocalTask(taskId: string, updates: Partial<LocalTask>): void {
+  const tasks = getLocalTasks();
+  const updated = tasks.map((task) => (task.id === taskId ? { ...task, ...updates } : task));
+  saveLocalTasks(updated);
 }

@@ -21,6 +21,9 @@ export interface Session {
   mode: TimerMode;
 }
 
+// タスクソース（どこから来たタスクか）
+export type TaskSource = 'linear' | 'local';
+
 // Linearタスク
 export interface LinearTask {
   id: string;
@@ -29,6 +32,29 @@ export interface LinearTask {
   priority: number; // 0-4（Linearの優先度）
   state: string; // "Todo", "In Progress", etc.
   dueDate: string | null; // ISO 8601形式
+}
+
+// ローカルタスク（アプリ内で作成）
+export interface LocalTask {
+  id: string; // UUID
+  title: string;
+  description: string;
+  priority: number; // 0-4（低=0, 高=4）
+  state: string; // "Todo", "In Progress", "Done"
+  dueDate: string | null; // ISO 8601形式
+  createdAt: string; // ISO 8601形式
+}
+
+// 統合タスク型（LinearとLocalの両方を扱える）
+export interface Task {
+  id: string;
+  title: string;
+  description: string;
+  priority: number;
+  state: string;
+  dueDate: string | null;
+  source: TaskSource; // どこから来たタスクか
+  createdAt?: string; // ローカルタスクのみ
 }
 
 // タイマー状態（Zustandストア用）
@@ -65,16 +91,20 @@ export interface SettingsState {
 
 // タスク状態（Zustandストア用）
 export interface TaskState {
-  tasks: LinearTask[];
+  tasks: Task[]; // 統合タスク型を使用
   selectedTaskId: string | null;
   isLoading: boolean;
   error: string | null;
   lastFetchedAt: Date | null;
 
   // アクション
-  setTasks: (tasks: LinearTask[]) => void;
+  setTasks: (tasks: Task[]) => void;
+  addLocalTask: (task: Omit<LocalTask, 'id' | 'createdAt'>) => void;
+  deleteTask: (taskId: string) => void;
+  updateTask: (taskId: string, updates: Partial<Task>) => void;
   selectTask: (taskId: string | null) => void;
   setLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
   clearError: () => void;
+  loadLocalTasks: () => void;
 }

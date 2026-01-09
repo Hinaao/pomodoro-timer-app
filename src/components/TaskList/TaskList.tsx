@@ -1,10 +1,19 @@
 'use client';
 
+import { useEffect } from 'react';
 import { TaskCard } from './TaskCard';
+import { AddTaskForm } from './AddTaskForm';
 import { useTasks } from '@/hooks/useTasks';
+import { useTaskStore } from '@/store/taskStore';
 
 export function TaskList() {
   const { tasks, isLoading, error, loadTasks } = useTasks();
+  const { loadLocalTasks } = useTaskStore();
+
+  // 初回マウント時にローカルタスクを読み込み
+  useEffect(() => {
+    loadLocalTasks();
+  }, [loadLocalTasks]);
 
   return (
     <div className="mt-8">
@@ -15,7 +24,7 @@ export function TaskList() {
           disabled={isLoading}
           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed"
         >
-          {isLoading ? '読み込み中...' : 'タスクを読み込む'}
+          {isLoading ? '読み込み中...' : 'Linearから読み込む'}
         </button>
       </div>
 
@@ -25,9 +34,14 @@ export function TaskList() {
         </div>
       )}
 
+      {/* タスク追加フォーム */}
+      <div className="mb-4">
+        <AddTaskForm />
+      </div>
+
       {tasks.length === 0 && !isLoading && !error && (
         <div className="p-8 text-center text-gray-500 bg-gray-50 rounded-lg">
-          タスクがありません。「タスクを読み込む」ボタンをクリックしてLinearからタスクを取得してください。
+          タスクがありません。「新しいタスクを追加」または「Linearから読み込む」をクリックしてください。
         </div>
       )}
 

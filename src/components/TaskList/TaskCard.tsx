@@ -1,17 +1,17 @@
 'use client';
 
-import { LinearTask } from '@/types';
+import { Task } from '@/types';
 import { useTaskStore } from '@/store/taskStore';
 import { useTimerStore } from '@/store/timerStore';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
 
 interface TaskCardProps {
-  task: LinearTask;
+  task: Task;
 }
 
 export function TaskCard({ task }: TaskCardProps) {
-  const { selectedTaskId, selectTask } = useTaskStore();
+  const { selectedTaskId, selectTask, deleteTask } = useTaskStore();
   const { setCurrentTask } = useTimerStore();
 
   const isSelected = selectedTaskId === task.id;
@@ -19,6 +19,13 @@ export function TaskCard({ task }: TaskCardProps) {
   const handleClick = () => {
     selectTask(task.id);
     setCurrentTask(task.id, task.title);
+  };
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (task.source === 'local' && confirm('このタスクを削除しますか？')) {
+      deleteTask(task.id);
+    }
   };
 
   // 優先度に応じた色
@@ -48,11 +55,26 @@ export function TaskCard({ task }: TaskCardProps) {
   return (
     <div
       onClick={handleClick}
-      className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+      className={`p-4 border-2 rounded-lg cursor-pointer transition-all relative ${
         isSelected ? 'border-blue-600 bg-blue-50' : 'border-gray-200 hover:border-gray-400'
       } ${getPriorityColor(task.priority)}`}
     >
-      <div className="flex justify-between items-start mb-2">
+      {/* ソース表示 */}
+      <div className="absolute top-2 right-2 flex gap-2 items-center">
+        <span className={`text-xs px-2 py-1 rounded ${task.source === 'local' ? 'bg-green-200 text-green-800' : 'bg-purple-200 text-purple-800'}`}>
+          {task.source === 'local' ? 'ローカル' : 'Linear'}
+        </span>
+        {task.source === 'local' && (
+          <button
+            onClick={handleDelete}
+            className="text-xs px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+          >
+            削除
+          </button>
+        )}
+      </div>
+
+      <div className="flex justify-between items-start mb-2 pr-20">
         <h3 className="font-semibold text-lg">{task.title}</h3>
         <span className="text-xs font-bold px-2 py-1 rounded bg-white">
           {getPriorityLabel(task.priority)}

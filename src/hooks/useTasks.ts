@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useTaskStore } from '@/store/taskStore';
 import { useSettingsStore } from '@/store/settingsStore';
+import { Task } from '@/types';
 
 /**
  * タスク取得ロジックを管理するフック
@@ -34,7 +35,14 @@ export function useTasks() {
       }
 
       const data = await response.json();
-      setTasks(data.tasks);
+
+      // LinearタスクをTask型に変換
+      const linearTasks: Task[] = data.tasks.map((task: any) => ({
+        ...task,
+        source: 'linear' as const,
+      }));
+
+      setTasks(linearTasks);
       setLoading(false);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'タスクの取得に失敗しました';
