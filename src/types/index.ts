@@ -108,3 +108,50 @@ export interface TaskState {
   clearError: () => void;
   loadLocalTasks: () => void;
 }
+
+// スケジュールされたタスク
+export interface ScheduledTask {
+  linearIssueId: string; // Taskのid（既存タスクへの参照）
+  taskTitle: string; // タスク名（スナップショット）
+  estimatedPomodoros: number; // 見積もりポモドーロ数
+  completedPomodoros: number; // 完了したポモドーロ数
+  notes?: string; // メモ（オプション）
+}
+
+// 日付別スケジュール
+export interface Schedule {
+  id: string; // UUID
+  date: string; // YYYY-MM-DD形式
+  tasks: ScheduledTask[]; // その日に割り当てられたタスク一覧
+}
+
+// スケジュール状態（Zustandストア用）
+export interface ScheduleState {
+  schedules: Schedule[];
+  selectedDate: string | null;
+  isLoading: boolean;
+  error: string | null;
+
+  // アクション
+  loadSchedules: () => void;
+  getScheduleByDate: (date: string) => Schedule | undefined;
+  addTaskToSchedule: (
+    date: string,
+    task: Omit<ScheduledTask, 'completedPomodoros'>
+  ) => void;
+  removeTaskFromSchedule: (date: string, linearIssueId: string) => void;
+  updateScheduledTask: (
+    date: string,
+    linearIssueId: string,
+    updates: Partial<ScheduledTask>
+  ) => void;
+  updateCompletedPomodoros: (
+    date: string,
+    linearIssueId: string,
+    count: number
+  ) => void;
+  setSelectedDate: (date: string | null) => void;
+  deleteSchedule: (date: string) => void;
+  setError: (error: string | null) => void;
+  clearError: () => void;
+}

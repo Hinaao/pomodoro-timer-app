@@ -1,10 +1,11 @@
-import { Settings, Session, LocalTask } from '@/types';
+import { Settings, Session, LocalTask, Schedule } from '@/types';
 
 // localStorageのキー
 const STORAGE_KEYS = {
   SETTINGS: 'pomodoro-app-settings',
   SESSIONS: 'pomodoro-app-sessions',
   LOCAL_TASKS: 'pomodoro-app-local-tasks',
+  SCHEDULES: 'pomodoro-app-schedules',
 } as const;
 
 // デフォルト設定
@@ -187,4 +188,72 @@ export function updateLocalTask(taskId: string, updates: Partial<LocalTask>): vo
   const tasks = getLocalTasks();
   const updated = tasks.map((task) => (task.id === taskId ? { ...task, ...updates } : task));
   saveLocalTasks(updated);
+}
+
+/**
+ * スケジュール一覧を取得
+ */
+export function getSchedules(): Schedule[] {
+  if (typeof window === 'undefined') return [];
+
+  try {
+    const stored = localStorage.getItem(STORAGE_KEYS.SCHEDULES);
+    if (!stored) return [];
+
+    return JSON.parse(stored);
+  } catch (error) {
+    console.error('Failed to load schedules:', error);
+    return [];
+  }
+}
+
+/**
+ * スケジュール一覧を保存
+ */
+export function saveSchedules(schedules: Schedule[]): void {
+  if (typeof window === 'undefined') return;
+
+  try {
+    localStorage.setItem(STORAGE_KEYS.SCHEDULES, JSON.stringify(schedules));
+  } catch (error) {
+    console.error('Failed to save schedules:', error);
+    if (error instanceof DOMException && error.code === 22) {
+      alert('ストレージ容量が不足しています。');
+    }
+  }
+}
+
+/**
+ * 特定日付のスケジュールを取得
+ */
+export function getScheduleByDate(date: string): Schedule | undefined {
+  const schedules = getSchedules();
+  return schedules.find((schedule) => schedule.date === date);
+}
+
+/**
+ * スケジュールを追加または更新
+ */
+export function upsertSchedule(schedule: Schedule): void {
+  const schedules = getSchedules();
+  const index = schedules.findIndex((s) => s.date === schedule.date);
+
+  if (index >= 0) {
+    // 既存のスケジュールを更新
+    schedules[index] = schedule;
+  } else {
+    // 新しいスケジュールを追加
+    schedules.push(schedule);
+  }
+
+  saveSchedules(schedules);
+}
+
+/**
+ * 特定日付のスケジュールを削除
+ */
+export function deleteSchedule(date: string): void {
+  const schedules = getSchedules();
+  const filtered = schedules.filter((schedule) => schedule.date !== date);
+  saveSchedules(filtered);
 }

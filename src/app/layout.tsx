@@ -19,6 +19,9 @@ export default function RootLayout({
             <a href="/" className="hover:text-gray-300">
               ホーム
             </a>
+            <a href="/calendar" className="hover:text-gray-300">
+              カレンダー
+            </a>
             <a href="/settings" className="hover:text-gray-300">
               設定
             </a>
